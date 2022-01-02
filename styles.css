@@ -1,0 +1,99 @@
+#board_area {
+  padding: 0;
+}
+
+#board {
+  display: grid;
+  background-color: rgb(255, 235, 205);
+  border: 2px solid black;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 30px);
+  padding: 0;
+  width: 480px;
+  height: 454px;
+}
+
+.square {
+  text-align: center;
+  border: 1px solid white;
+  width: 30px;
+  height: 30px;
+  border-radius: 20%;
+  text-transform: uppercase;
+}
+
+.tw {
+  background-image: url(./public/pics/TW.png);
+  background-size: 90%;
+  background-repeat: no-repeat;
+}
+
+.tl {
+  background-image: url(./public/pics/TL.png);
+  background-size: 90%;
+  background-repeat: no-repeat;
+}
+
+.dw {
+  background-image: url(./public/pics/DW.png);
+  background-size: 90%;
+  background-repeat: no-repeat;
+}
+
+.dl {
+  background-image: url(./public/pics/DL.png);
+  background-size: 90%;
+  background-repeat: no-repeat;
+}
+
+.st {
+  background-image: url(./public/pics/ST.png);
+  background-size: 90%;
+  background-repeat: no-repeat;
+}
+
+.tile {
+  text-align: center;
+  display: inline-block;
+  background-color: whitesmoke;
+
+  border-radius: 20%;
+  text-transform: uppercase;
+  min-width: 25px;
+  height: auto;
+  cursor: move;
+}
+
+.p1 {
+  border: 1px solid rgb(38, 184, 38);
+}
+
+.tilep1 {
+  cursor: auto;
+  border: 2px dotted rgb(38, 184, 38);
+}
+
+.p2 {
+  border: 1px solid rgb(221, 56, 56);
+}
+
+.tilep2 {
+  cursor: auto;
+  border: 2px dotted rgb(221, 56, 56);
+}
+
+sup {
+  font-size: -1px;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+.cell {
+  min-width: 25px;
+}
+
+.hide {
+  display: none;
+}
