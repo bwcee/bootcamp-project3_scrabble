@@ -1,3 +1,15 @@
+body {
+  justify-content: center;
+  /* text-align: center; */
+}
+
+#history {
+  display: block;
+  width: 100%;
+  height: 300px;
+  overflow-y: scroll;
+}
+
 #main {
   margin: 20px 30px 10px 100px;
   /* margin: auto; */
@@ -5,6 +17,32 @@
   grid-template-columns: [col1] 65% [col2] 35%;
   grid-template-rows: [row1] 90% [row2] 10%;
   justify-content: center;
+}
+
+#definition {
+  text-align: center;
+  position: fixed;
+  z-index: 10;
+  width: auto;
+  height: auto;
+  margin: 150px 300px;
+  background-color: whitesmoke;
+  border: 1px solid grey;
+  border-radius: 3%;
+  padding: 10px;
+}
+
+#modal {
+  text-align: center;
+  position: fixed;
+  z-index: 10;
+  width: auto;
+  height: auto;
+  margin: 150px 300px;
+  background-color: whitesmoke;
+  border: 1px solid grey;
+  border-radius: 3%;
+  padding: 10px;
 }
 
 #board_area {
@@ -114,6 +152,10 @@ table {
 
 .cell {
   min-width: 25px;
+}
+
+.player_score {
+  background-color: rgba(231, 236, 222, 0.938);
 }
 
 .hide {

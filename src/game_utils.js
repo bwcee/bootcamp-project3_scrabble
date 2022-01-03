@@ -69,6 +69,13 @@ const play = () => {
     return alert("Eh word not in dictionary leh");
   }
 
+  document
+    .getElementById("history")
+    .insertAdjacentHTML(
+      "beforeend",
+      `<div><p style="display: inline;"class="mb-1">${wordPlayed}</p><span>....<i style="cursor: pointer" onclick="dispDefn('${wordPlayed}')" class="far fa-comment-dots"></i></span></div>`
+    );
+
   let score = getScore();
   if (turn === "player1") {
     document.getElementById("p1WordScore").innerHTML = score;
@@ -106,7 +113,7 @@ const play = () => {
   /* reset currentWord */
   currentWord = [];
 
-  updateStatus()
+  updateStatus();
 };
 
 const chkLegitPlacement = () => {
@@ -286,17 +293,37 @@ const clear = () => {
       (el) => el.tileId == wordObj.tileId
     );
     boardLetters.splice(boardLetterToRemove, 1);
-    document.getElementById(wordObj.squareId).innerHTML=""
+    document.getElementById(wordObj.squareId).innerHTML = "";
   });
 
   topUpRack(hand, rack);
 
   currentWord = [];
-  console.log("boardletter after clearing", boardLetters, "currentWord after clearing", currentWord)
+  console.log(
+    "boardletter after clearing",
+    boardLetters,
+    "currentWord after clearing",
+    currentWord
+  );
 };
 
-// swap functionality
-// select letters to swap... this is last priority
+/*-------------------------------------------------- 
+swap btn functionality
+-----------------------------------------------------*/
+const swap = () => {
+  document.getElementById("modal").classList.toggle("hide");
+};
+
+const doSwap = (hand, rack, letter) => {
+  const foundHandTile = hand.findIndex((el) => el.tile === letter);
+  if (foundHandTile > 0) {
+    gameTiles.push(hand[foundHandTile]);
+    hand.splice(foundHandTile, 1);
+    hand.push(gameTiles.shift());
+    shuffleTiles(gameTiles);
+  }
+  topUpRack(hand, rack);
+};
 
 /*-------------------------------------------------- 
 append functions to buttons
@@ -304,6 +331,46 @@ append functions to buttons
 document.getElementById("play_btn").addEventListener("click", play);
 document.getElementById("pass_btn").addEventListener("click", pass);
 document.getElementById("clear_btn").addEventListener("click", clear);
+document.getElementById("swap_btn").addEventListener("click", swap);
+/* add eventlistener to x in swap modal to close the  modal */
+document.querySelector("#modal a").addEventListener("click", () => {
+  document.getElementById("modal").classList.toggle("hide");
+});
+/* add keydown listener to modal input box */
+document.querySelector("#modal input").addEventListener("keydown", (ev) => {
+  if (ev.key === "Enter") {
+    const swapLtrs = document.querySelector("#modal input").value;
+    if (swapLtrs.length == 0) {
+      return alert("You did not key in any letters!");
+    } else {
+      if (turn === "player1") {
+        hand = p1Hand;
+        rack = "p1_rack";
+      } else {
+        hand = p2Hand;
+        rack = "p2_rack";
+      }
+      for (let i = 0; i < swapLtrs.length; i += 1) {
+        doSwap(hand, rack, swapLtrs[i]);
+      }
+      document.getElementById("modal").classList.toggle("hide");
+      document.querySelector("#modal input").value = "";
+    }
+  }
+});
+
+/* definition modal functions */
+const dispDefn = (word) => {
+  document.getElementById("definition").classList.toggle("hide")
+  const upperWord = word.toUpperCase()
+  const defn = dict[word]
+  document.querySelector("#definition p").innerHTML= `<p class="mb-1"><strong>${upperWord} Definition</strong></p><p>${defn}</p>`
+};
+
+const closeDefn =()=>{
+  document.getElementById("definition").classList.toggle("hide")
+}
+
 
 /////////////////////////////////////////////////////////
 // initialise game

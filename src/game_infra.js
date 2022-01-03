@@ -127,8 +127,7 @@ const createTiles = () => {
     { l: "w", s: 4, f: 2 },
     { l: "x", s: 8, f: 1 },
     { l: "y", s: 4, f: 2 },
-    { l: "z", s: 10, f: 1 },
-    // { l: "▢", s: 0, f: 2 },
+    { l: "z", s: 10, f: 1 }
   ];
   const allTiles = [];
   let id = 0;
@@ -148,8 +147,23 @@ const createTiles = () => {
 // game ui layout
 /////////////////////////////////////////////////////////
 /*-------------------------------------------------- 
-create 4 main divs to hold diff display elements 
+create skeletal frame to hold diff display elements 
 -----------------------------------------------------*/
+document
+  .querySelector("body")
+  .insertAdjacentHTML("afterbegin", `<div id="modal" class="hide">`+
+  `<div class="text-right text-muted"><a style="cursor: pointer">x</a></div>`+
+  `<p>Please key in letters you want to swap.<br> No commas, spacing needed. <em>Enter</em> when done.</p>`+
+  `<input type="text">`+
+  `</div>`);
+
+  document
+  .querySelector("body")
+  .insertAdjacentHTML("afterbegin", `<div id="definition" class="hide">`+
+  `<div class="text-right text-muted"><a onclick="closeDefn()" style="cursor: pointer">x</a></div>`+
+  `<p>This is the definition</p>`+
+  `</div>`);
+
 document
   .getElementById("main")
   .insertAdjacentHTML(
@@ -330,13 +344,13 @@ document
   .getElementById("status_area")
   .insertAdjacentHTML(
     "afterbegin",
-    `<div>Word history</div>` +
+    `<div id="history"><strong>Word History</strong></div>` +
       `<table>` +
-      `<tr><td>Player 1 word score:<td><td id="p1WordScore">0<td></tr>` +
-      `<tr><td>Player 1 total score:<td><td id="p1TotalScore">0<td></tr>` +
-      `<tr><td>Player 2 word score:<td><td id="p2WordScore">0<td></tr>` +
-      `<tr><td>Player 2 total score:<td><td id="p2TotalScore">0<td></tr>` +
-      `<tr><td>Tiles left:<td><td id="tilesLeft">0<td></tr>` +
+      `<tr ><td>Player 1 word score:<td><td id="p1WordScore">0<td></tr>` +
+      `<tr class="player_score font-weight-bold"><td>Player 1 total score:<td><td id="p1TotalScore">0<td></tr>` +
+      `<tr ><td>Player 2 word score:<td><td id="p2WordScore">0<td></tr>` +
+      `<tr class="player_score font-weight-bold"><td>Player 2 total score:<td><td id="p2TotalScore">0<td></tr>` +
+      `<tr class="font-weight-bold"><td>Tiles left:<td><td id="tilesLeft">98<td></tr>` +
       `</table>`
   );
 
