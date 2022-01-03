@@ -1,5 +1,14 @@
+#main {
+  margin: 20px 30px 10px 100px;
+  /* margin: auto; */
+  display: grid;
+  grid-template-columns: [col1] 65% [col2] 35%;
+  grid-template-rows: [row1] 90% [row2] 10%;
+  justify-content: center;
+}
+
 #board_area {
-  padding: 0;
+  margin: auto;
 }
 
 #board {
@@ -8,9 +17,22 @@
   border: 2px solid black;
   grid-template-columns: repeat(15, 1fr);
   grid-template-rows: repeat(15, 30px);
-  padding: 0;
+  /* padding: 0; */
   width: 480px;
-  height: 454px;
+  /* height: 454px; */
+}
+
+#pHands_area {
+  margin: auto;
+  justify-content: center;
+}
+
+#p1Hand table {
+  margin: auto;
+}
+
+#p2Hand table {
+  margin: auto;
 }
 
 .square {

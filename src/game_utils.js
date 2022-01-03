@@ -70,18 +70,21 @@ const play = () => {
   }
 
   let score = getScore();
+  if (turn === "player1") {
+    document.getElementById("p1WordScore").innerHTML = score;
+  } else {
+    document.getElementById("p2WordScore").innerHTML = score;
+  }
 
   /* go about resetting stuff */
   if (turn === "player1") {
     hand = p1Hand;
     rack = "p1_rack";
-    tileClass = "tilep1";
     p1Score += score;
     turn = "player2";
   } else {
     hand = p2Hand;
     rack = "p2_rack";
-    tileClass = "tilep2";
     p2Score += score;
     turn = "player1";
   }
@@ -93,6 +96,7 @@ const play = () => {
   topUpRack(hand, rack);
 
   /* remove draggable from tiles placed on board once confirmed */
+  let tileClass = "tile" + rack.slice(0, 2);
   currentWord.forEach((wordObj) => {
     const tile = document.getElementById(wordObj.tileId);
     tile.classList.add(tileClass);
@@ -101,6 +105,8 @@ const play = () => {
 
   /* reset currentWord */
   currentWord = [];
+
+  updateStatus()
 };
 
 const chkLegitPlacement = () => {
@@ -258,8 +264,36 @@ const pass = () => {
   document.getElementById("p2Hand").classList.toggle("hide");
 };
 
-// clear functionality
-// haf to somehow bring all the tiles in currentWord back to p1_rack and also remove them from boardLetters
+/*-------------------------------------------------- 
+clear btn functionality
+-----------------------------------------------------*/
+const clear = () => {
+  if (turn === "player1") {
+    hand = p1Hand;
+    rack = "p1_rack";
+  } else {
+    hand = p2Hand;
+    rack = "p2_rack";
+  }
+
+  currentWord.forEach((wordObj) => {
+    hand.push({
+      tile: wordObj.tileLtr,
+      pt: wordObj.tilePt,
+      id: wordObj.tileId,
+    });
+    const boardLetterToRemove = boardLetters.findIndex(
+      (el) => el.tileId == wordObj.tileId
+    );
+    boardLetters.splice(boardLetterToRemove, 1);
+    document.getElementById(wordObj.squareId).innerHTML=""
+  });
+
+  topUpRack(hand, rack);
+
+  currentWord = [];
+  console.log("boardletter after clearing", boardLetters, "currentWord after clearing", currentWord)
+};
 
 // swap functionality
 // select letters to swap... this is last priority
@@ -269,6 +303,7 @@ append functions to buttons
 -----------------------------------------------------*/
 document.getElementById("play_btn").addEventListener("click", play);
 document.getElementById("pass_btn").addEventListener("click", pass);
+document.getElementById("clear_btn").addEventListener("click", clear);
 
 /////////////////////////////////////////////////////////
 // initialise game
