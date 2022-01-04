@@ -83,31 +83,31 @@ body {
 }
 
 .tw {
-  background-image: url(./public/pics/TW.png);
+  background-image: url(/pics/TW.png);
   background-size: 90%;
   background-repeat: no-repeat;
 }
 
 .tl {
-  background-image: url(./public/pics/TL.png);
+  background-image: url(/pics/TL.png);
   background-size: 90%;
   background-repeat: no-repeat;
 }
 
 .dw {
-  background-image: url(./public/pics/DW.png);
+  background-image: url(/pics/DW.png);
   background-size: 90%;
   background-repeat: no-repeat;
 }
 
 .dl {
-  background-image: url(./public/pics/DL.png);
+  background-image: url(/pics/DL.png);
   background-size: 90%;
   background-repeat: no-repeat;
 }
 
 .st {
-  background-image: url(./public/pics/ST.png);
+  background-image: url(/pics/ST.png);
   background-size: 90%;
   background-repeat: no-repeat;
 }
