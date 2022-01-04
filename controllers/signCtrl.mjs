@@ -1,5 +1,7 @@
 import BaseController from "./baseCtrl.mjs";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+const { SALT } = process.env;
 
 export default class SignInUpController extends BaseController {
   constructor(db, model) {
@@ -17,26 +19,25 @@ export default class SignInUpController extends BaseController {
   async doSignIn(req, res) {
     const { email, password } = req.body;
     try {
-      const result = await this.model.findOne({
+      const user = await this.model.findOne({
         where: {
           email: email,
         },
         raw: true,
       });
-      console.log("This is query result", result);
-      if (!result) {
+      console.log("Sign-in query result", user);
+      if (!user) {
         res.send("null");
       } else {
-        bcrypt.compare(password, result.password, (err, outcome) => {
-          if (outcome === true) {
-            console.log("Log in success!");
-            res.cookie("loggedIn", true);
-            res.cookie("userID", result.id);
-            res.send(result);
-          } else {
-            res.send("null");
-          }
-        });
+        const logInSuccess = await bcrypt.compare(password, user.password);
+
+        if (logInSuccess) {
+          const payload = { id: user.id, user: user.user };
+          const token = jwt.sign(payload, SALT, { expiresIn: "6h" });
+          res.send(token);
+        } else {
+          res.send("null");
+        }
       }
     } catch (err) {
       this.errorHandler(err, res);

@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import methodOverride from "method-override";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+// import verifyToken middleware
+import verifyToken from "./middlewares/auth.mjs"
 
 // import db
 import db from "./models/index.js";
@@ -38,11 +40,8 @@ app.use(cookieParser());
 
 // make use of defined routes
 app.use("/", signInUpRoutes(signInUpControl));
-app.use("/game", gameRoutes(gameControl));
+app.use("/game", verifyToken, gameRoutes(gameControl)); //all gameRoutes have to be verified
 
-// app.get("/", (req, res)=>{
-//   res.render( "main")
-// })
 
 const PORT = process.env.PORT || 3004;
 app.listen(PORT);

@@ -58,6 +58,14 @@ module.exports = {
       current_word: {
         type: Sequelize.ARRAY(Sequelize.JSON),
       },
+      p1_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
+      p2_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
       p1_score: {
         type: Sequelize.INTEGER,
         defaultValue: 0,

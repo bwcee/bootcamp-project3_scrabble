@@ -28,6 +28,14 @@ const gameModel = (seqInstance, seqObj) => {
       currentWord: {
         type: seqObj.ARRAY(seqObj.JSON),
       },
+      p1Id: {
+        allowNull: false,
+        type: seqObj.INTEGER,
+      },
+      p2Id: {
+        allowNull: false,
+        type: seqObj.INTEGER,
+      },
       p1Score: {
         type: seqObj.INTEGER,
         defaultValue: 0,
