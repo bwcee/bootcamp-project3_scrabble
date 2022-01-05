@@ -130,7 +130,9 @@ create playing board
 -----------------------------------------------------*/
 const playBoard = buildBoard();
 
-const createPlayBoard = () => {
+const createPlayBoard = (gameId) => {
+  const token = localStorage.getItem("sessionToken");
+  const auth = { headers: { Authorization: `Bearer ${token}` } };
   playBoard.forEach((row) => {
     row.forEach((square) => {
       if (!square.special) {
@@ -179,26 +181,50 @@ const createPlayBoard = () => {
           squareId: ev.target.id,
           squareSpecial: ev.target.classList[1],
         };
-        // chk tt tile not alr in boardLetters, remove old posn of tile if so
-        const foundBoard = boardLetters.findIndex((el) => el.tileId == tile.id);
-        foundBoard >= 0 ? boardLetters.splice(foundBoard, 1) : "";
-        boardLetters.push(wordObj);
-        // chk tt tile not alr in currentWord, remove old posn of tile if so
-        const foundCurrWord = currentWord.findIndex(
-          (el) => el.tileId == tile.id
-        );
-        foundCurrWord >= 0 ? currentWord.splice(foundCurrWord, 1) : "";
-        currentWord.push(wordObj);
-        // remove tiles from playerHands
-        if (turn === "player1") {
-          const foundHandTile = p1Hand.findIndex((el) => el.id == tile.id);
-          p1Hand.splice(foundHandTile, 1);
-        } else {
-          const foundHandTile = p2Hand.findIndex((el) => el.id == tile.id);
-          p2Hand.splice(foundHandTile, 1);
+
+        try {
+          /* get variables from db */
+          axios.get(`/game/get_game/${gameId}`, auth).then((gameState) => {
+            // chk tt tile not alr in boardLetters, remove old posn of tile if so
+            const foundBoard = gameState.data.boardLetters.findIndex(
+              (el) => el.tileId == tile.id
+            );
+            foundBoard >= 0
+              ? gameState.data.boardLetters.splice(foundBoard, 1)
+              : "";
+            gameState.data.boardLetters.push(wordObj);
+            // chk tt tile not alr in currentWord, remove old posn of tile if so
+            const foundCurrWord = gameState.data.currentWord.findIndex(
+              (el) => el.tileId == tile.id
+            );
+            foundCurrWord >= 0
+              ? gameState.data.currentWord.splice(foundCurrWord, 1)
+              : "";
+            gameState.data.currentWord.push(wordObj);
+            // remove tiles from playerHands
+            if (gameState.data.turn === "player1") {
+              const foundHandTile = gameState.data.p1Hand.findIndex(
+                (el) => el.id == tile.id
+              );
+              gameState.data.p1Hand.splice(foundHandTile, 1);
+            } else {
+              const foundHandTile = gameState.data.p2Hand.findIndex(
+                (el) => el.id == tile.id
+              );
+              gameState.data.p2Hand.splice(foundHandTile, 1);
+            }
+            /* push updated variables back to db */
+            const data = {
+              bl: gameState.data.boardLetters,
+              cw: gameState.data.currentWord,
+              p1Hand: gameState.data.p1Hand,
+              p2Hand: gameState.data.p2Hand,
+            };
+            axios.put(`/game/update_board/${gameId}`, data, auth);
+          });
+        } catch (err) {
+          console.log(err);
         }
-        // console.log("boardLetters after drag to board", boardLetters);
-        // console.log("currentWord after drag to board", currentWord);
       }
     });
   });
@@ -245,30 +271,36 @@ const createRack = (hand, rackId, handId, gameId) => {
 
         try {
           /* get variables from db */
-          axios
-            .get(`/game/get_game/${gameId}`, auth)
-            .then((gameState) => {
-              // remove tile from boardLetters
-              const boardLetterToRemove = gameState.data.boardLetters.findIndex(
-                (el) => el.tileId == tile.id
-              );
-              gameState.data.boardLetters.splice(boardLetterToRemove, 1);
-              // remove tile from currentWord
-              const currWordLtrToRemove = gameState.data.currentWord.findIndex(
-                (el) => el.tileId == tile.id
-              );
-              gameState.data.currentWord.splice(currWordLtrToRemove, 1);
-              // put tiles back into playerHands
-              gameState.data[handId].push(currWordLtrToRemove);
-              /* push updated variables back to db */
-              const data = {
-                bl: gameState.data.boardLetters,
-                cw: gameState.data.currentWord,
-                hand: gameState.data[handId],
-                player: handId
-              };
-              axios.post(`/game/update_game/${gameId}`, data, auth);
+          axios.get(`/game/get_game/${gameId}`, auth).then((gameState) => {
+            // remove tile from boardLetters
+            const boardLetterToRemove = gameState.data.boardLetters.findIndex(
+              (el) => el.tileId == tile.id
+            );
+            gameState.data.boardLetters.splice(boardLetterToRemove, 1);
+            // remove tile from currentWord
+            const currWordLtrToRemove = gameState.data.currentWord.findIndex(
+              (el) => el.tileId == tile.id
+            );
+            const removedLetter = gameState.data.currentWord.splice(
+              currWordLtrToRemove,
+              1
+            );
+            // put tiles back into playerHands
+            console.log("This is tile pushed back to player hand", tile);
+            gameState.data[handId].push({
+              tile: removedLetter[0].tileLtr,
+              pt: removedLetter[0].tilePt,
+              id: removedLetter[0].tileId,
             });
+            /* push updated variables back to db */
+            const data = {
+              bl: gameState.data.boardLetters,
+              cw: gameState.data.currentWord,
+              hand: gameState.data[handId],
+              player: handId,
+            };
+            axios.put(`/game/update_rack/${gameId}`, data, auth);
+          });
         } catch (err) {
           console.log(err);
         }

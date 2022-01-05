@@ -96,7 +96,7 @@ export default class GameController extends BaseController {
     }
   }
 
-  async updateGame(req, res) {
+  async updateRack(req, res) {
     const gameId = req.params.gameId;
     const [boardLetters, currentWord, playerHand, handId] = Object.values(
       req.body
@@ -122,6 +122,25 @@ export default class GameController extends BaseController {
           { where: { id: gameId }, returning: true }
         );
       }
+      res.send(updatedGame);
+    } catch (err) {
+      return this.errorHandler(err, res);
+    }
+  }
+
+  async updateBoard(req, res) {
+    const gameId = req.params.gameId;
+    const [boardLetters, currentWord, p1Hand, p2Hand] = Object.values(req.body);
+    try {
+      const updatedGame = await this.model.update(
+        {
+          boardLetters: boardLetters,
+          currentWord: currentWord,
+          p1Hand: p1Hand,
+          p2Hand: p2Hand,
+        },
+        { where: { id: gameId }, returning: true }
+      );
       res.send(updatedGame);
     } catch (err) {
       return this.errorHandler(err, res);

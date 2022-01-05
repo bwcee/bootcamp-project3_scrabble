@@ -103,7 +103,6 @@ document.getElementById("newGameBtn").addEventListener("click", async () => {
   const token = localStorage.getItem("sessionToken");
   document.getElementById("selectGameDiv").remove();
   createGameFrame();
-  createPlayBoard();
   createStatusArea();
   createRackTables();
   createButtons();
@@ -116,9 +115,10 @@ document.getElementById("newGameBtn").addEventListener("click", async () => {
       }
     );
     console.log("This is result from post", game);
-    /* can only build rack after i get results from game */
-    createRack(game.data.p1Hand, "p1_rack", "p1Hand",game.data.id);
-    createRack(game.data.p2Hand, "p2_rack", "p2Hand",game.data.id);
+    /* can only build playboard and rack after getting current game's state */
+    createPlayBoard(game.data.id);
+    createRack(game.data.p1Hand, "p1_rack", "p1Hand", game.data.id);
+    createRack(game.data.p2Hand, "p2_rack", "p2Hand", game.data.id);
   } catch (err) {
     console.log(err);
   }
