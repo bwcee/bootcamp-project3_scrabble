@@ -294,9 +294,11 @@ const createRack = (hand, rackId) => {
         const currWordLtrToRemove = currentWord.findIndex(
           (el) => el.tileId == tile.id
         );
-        currentWord.splice(currWordLtrToRemove, 1);
+        const returnedLetter = currentWord.splice(currWordLtrToRemove, 1);
         // put tiles back into playerHands
-        hand.push(currWordLtrToRemove);
+        hand.push({tile: returnedLetter[0].tileLtr,
+        pt: returnedLetter[0].tilePt,
+      id: returnedLetter[0].tileId});
       }
     });
   }
