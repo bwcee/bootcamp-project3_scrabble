@@ -296,7 +296,7 @@ const createRack = (hand, rackId) => {
         );
         currentWord.splice(currWordLtrToRemove, 1);
         // put tiles back into playerHands
-        p1Hand.push(currWordLtrToRemove);
+        hand.push(currWordLtrToRemove);
       }
     });
   }
