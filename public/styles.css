@@ -60,19 +60,6 @@ body {
   /* height: 454px; */
 }
 
-#pHands_area {
-  margin: auto;
-  justify-content: center;
-}
-
-#p1Hand table {
-  margin: auto;
-}
-
-#p2Hand table {
-  margin: auto;
-}
-
 .square {
   text-align: center;
   border: 1px solid white;
@@ -146,12 +133,32 @@ sup {
   font-size: -1px;
 }
 
+#pHands_area {
+  margin: auto;
+  justify-content: center;
+}
+
+#p1Hand table {
+  margin: auto;
+}
+
+#p2Hand table {
+  margin: auto;
+}
+
 table {
   border-collapse: collapse;
 }
 
 .cell {
-  min-width: 25px;
+  text-align: center;
+  min-width: 30px;
+  border: 1px solid grey;
+  border-radius: 5%;
+}
+
+.cell:empty::after {
+  content: "\00a0";
 }
 
 .player_score {

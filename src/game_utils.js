@@ -179,7 +179,7 @@ const play = () => {
         p2Hand,
         currentWord,
         p1Score,
-        p2Score
+        p2Score,
       };
       axios.put(`/game/update_game/${gameId}`, data, auth);
     });
@@ -333,7 +333,6 @@ const getScore = (currentWord) => {
       score = score + wordObj.tilePt;
     }
   });
-  console.log("Points from currentWord is", score);
   return score;
 };
 
@@ -341,10 +340,22 @@ const getScore = (currentWord) => {
 pass btn functionality
 -----------------------------------------------------*/
 const pass = () => {
-  if (turn === "player1") {
-    turn = "player2";
-  } else {
-    turn = "player1";
+  const token = localStorage.getItem("sessionToken");
+  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const gameId = localStorage.getItem("gameId");
+
+  try {
+    /* get variables from db */
+    axios.get(`/game/get_game/${gameId}`, auth).then((gameState) => {
+      let turn = gameState.data.turn;
+      turn === "player1" ? (turn = "player2") : (turn = "player1");
+
+      /* push updated variables to db */
+      const data = { turn };
+      axios.put(`/game/update_turn/${gameId}`, data, auth);
+    });
+  } catch (err) {
+    console.log(err);
   }
 
   document.getElementById("p1Hand").classList.toggle("hide");
@@ -355,54 +366,113 @@ const pass = () => {
 clear btn functionality
 -----------------------------------------------------*/
 const clear = () => {
-  if (turn === "player1") {
-    hand = p1Hand;
-    rack = "p1_rack";
-  } else {
-    hand = p2Hand;
-    rack = "p2_rack";
-  }
+  const token = localStorage.getItem("sessionToken");
+  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const gameId = localStorage.getItem("gameId");
+  let hand;
+  let rack;
 
-  currentWord.forEach((wordObj) => {
-    hand.push({
-      tile: wordObj.tileLtr,
-      pt: wordObj.tilePt,
-      id: wordObj.tileId,
+  try {
+    /* get variables from db */
+    axios.get(`/game/get_game/${gameId}`, auth).then((gameState) => {
+      let turn = gameState.data.turn;
+      let boardLetters = gameState.data.boardLetters;
+      let currentWord = gameState.data.currentWord;
+      let p1Hand = gameState.data.p1Hand;
+      let p2Hand = gameState.data.p2Hand;
+
+      if (turn === "player1") {
+        hand = p1Hand;
+        rack = "p1_rack";
+      } else {
+        hand = p2Hand;
+        rack = "p2_rack";
+      }
+      currentWord.forEach((wordObj) => {
+        hand.push({
+          tile: wordObj.tileLtr,
+          pt: wordObj.tilePt,
+          id: wordObj.tileId,
+        });
+        const boardLetterToRemove = boardLetters.findIndex(
+          (el) => el.tileId == wordObj.tileId
+        );
+        boardLetters.splice(boardLetterToRemove, 1);
+        document.getElementById(wordObj.squareId).innerHTML = "";
+      });
+
+      topUpRack(hand, rack);
+
+      currentWord = [];
+
+      /* push updated variables to db */
+      const data = { boardLetters, currentWord, p1Hand, p2Hand };
+      axios.put(`/game/do_clear/${gameId}`, data, auth);
     });
-    const boardLetterToRemove = boardLetters.findIndex(
-      (el) => el.tileId == wordObj.tileId
-    );
-    boardLetters.splice(boardLetterToRemove, 1);
-    document.getElementById(wordObj.squareId).innerHTML = "";
-  });
-
-  topUpRack(hand, rack);
-
-  currentWord = [];
-  console.log(
-    "boardletter after clearing",
-    boardLetters,
-    "currentWord after clearing",
-    currentWord
-  );
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 /*-------------------------------------------------- 
 swap btn functionality
 -----------------------------------------------------*/
+const shuffleTiles = (tiles) => {
+  for (let i = 0; i < tiles.length; i += 1) {
+    const randomIndex = Math.floor(Math.random() * tiles.length);
+    const randomCard = tiles[randomIndex];
+    const currentCard = tiles[i];
+    tiles[i] = randomCard;
+    tiles[randomIndex] = currentCard;
+  }
+  return tiles;
+};
+
 const swap = () => {
   document.getElementById("modal").classList.toggle("hide");
 };
 
-const doSwap = (hand, rack, letter) => {
-  const foundHandTile = hand.findIndex((el) => el.tile === letter);
-  if (foundHandTile > 0) {
-    gameTiles.push(hand[foundHandTile]);
-    hand.splice(foundHandTile, 1);
-    hand.push(gameTiles.shift());
-    shuffleTiles(gameTiles);
+const doSwap = (swapLtrs) => {
+  const token = localStorage.getItem("sessionToken");
+  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const gameId = localStorage.getItem("gameId");
+  let hand;
+  let rack;
+
+  try {
+    /* get variables from db */
+    axios.get(`/game/get_game/${gameId}`, auth).then((gameState) => {
+      let turn = gameState.data.turn;
+      let gameTiles = gameState.data.gameTiles;
+      let p1Hand = gameState.data.p1Hand;
+      let p2Hand = gameState.data.p2Hand;
+
+      if (turn === "player1") {
+        hand = p1Hand;
+        rack = "p1_rack";
+      } else {
+        hand = p2Hand;
+        rack = "p2_rack";
+      }
+
+      for (let i = 0; i < swapLtrs.length; i += 1) {
+        const foundHandTile = hand.findIndex((el) => el.tile === swapLtrs[i]);
+        if (foundHandTile >= 0) {
+          gameTiles.push(hand[foundHandTile]);
+          hand.splice(foundHandTile, 1);
+          hand.push(gameTiles.shift());
+          shuffleTiles(gameTiles);
+        }
+      }
+      topUpRack(hand, rack);
+
+      /* push updated variables to db */
+      const data = { gameTiles, p1Hand, p2Hand };
+      axios.put(`/game/do_swap/${gameId}`, data, auth);
+    });
+  } catch (err) {
+    console.log(err);
   }
-  topUpRack(hand, rack);
 };
 
 /*-------------------------------------------------- 
@@ -439,16 +509,8 @@ const appendSwapModalFunc = () => {
       if (swapLtrs.length == 0) {
         return alert("You did not key in any letters!");
       } else {
-        if (turn === "player1") {
-          hand = p1Hand;
-          rack = "p1_rack";
-        } else {
-          hand = p2Hand;
-          rack = "p2_rack";
-        }
-        for (let i = 0; i < swapLtrs.length; i += 1) {
-          doSwap(hand, rack, swapLtrs[i]);
-        }
+        doSwap(swapLtrs);
+
         document.getElementById("modal").classList.toggle("hide");
         document.querySelector("#modal input").value = "";
       }

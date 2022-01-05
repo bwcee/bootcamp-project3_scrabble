@@ -72,7 +72,7 @@ export default class GameController extends BaseController {
 
       game.dataValues.player1Name = player1Name.user;
       game.dataValues.player2Name = player2Name.user;
-      console.log("This is game", game);
+      
       res.send(game);
     } catch (err) {
       return this.errorHandler(err, res);
@@ -140,15 +140,10 @@ export default class GameController extends BaseController {
     }
   }
 
-    async updateGame(req, res) {
+  async updateGame(req, res) {
     const gameId = req.params.gameId;
-    const [turn,
-        gameTiles,
-        p1Hand,
-        p2Hand,
-        currentWord,
-        p1Score,
-        p2Score] = Object.values(req.body);
+    const [turn, gameTiles, p1Hand, p2Hand, currentWord, p1Score, p2Score] =
+      Object.values(req.body);
     try {
       const updatedGame = await this.model.update(
         {
@@ -167,5 +162,57 @@ export default class GameController extends BaseController {
       return this.errorHandler(err, res);
     }
   }
-}
+  async updateTurn(req, res) {
+    const gameId = req.params.gameId;
+    const [turn] = Object.values(req.body);
+    try {
+      const updatedGame = await this.model.update(
+        {
+          turn: turn,
+        },
+        { where: { id: gameId }, returning: true }
+      );
+      res.send(updatedGame);
+    } catch (err) {
+      return this.errorHandler(err, res);
+    }
+  }
 
+  async doClear(req, res) {
+    const gameId = req.params.gameId;
+    const [boardLetters, currentWord, p1Hand, p2Hand] = Object.values(req.body);
+
+    try {
+      const updatedGame = await this.model.update(
+        {
+          boardLetters: boardLetters,
+          currentWord: currentWord,
+          p1Hand: p1Hand,
+          p2Hand: p2Hand,
+        },
+        { where: { id: gameId }, returning: true }
+      );
+      res.send(updatedGame);
+    } catch (err) {
+      return this.errorHandler(err, res);
+    }
+  }
+
+  async doSwap(req, res) {
+    const gameId = req.params.gameId;
+    const [gameTiles, p1Hand, p2Hand] = Object.values(req.body);
+    try {
+      const updatedGame = await this.model.update(
+        {
+          gameTiles: gameTiles,
+          p1Hand: p1Hand,
+          p2Hand: p2Hand,
+        },
+        { where: { id: gameId }, returning: true }
+      );
+      res.send(updatedGame);
+    } catch (err) {
+      return this.errorHandler(err, res);
+    }
+  }
+}
