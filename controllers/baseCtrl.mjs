@@ -11,7 +11,7 @@ export default class BaseController {
       link: "/",
       link_text: "go Home",
     };
-    res.render("pages/error", { data });
+    res.render("error", { data });
   };
 
   async getAll(req, res) {

@@ -1,78 +1,68 @@
-//////////////////////////////////
-//Helper functions
-//////////////////////////////////
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
-const getRandomIndex = (max) => Math.floor(Math.random() * max);
-
-// Shuffle an array of cards
-export const shuffleCards = (cards) => {
-  for (let currentIndex = 0; currentIndex < cards.length; currentIndex += 1) {
-    const randomIndex = getRandomIndex(cards.length);
-    const randomCard = cards[randomIndex];
-    const currentCard = cards[currentIndex];
-    cards[currentIndex] = randomCard;
-    cards[randomIndex] = currentCard;
+/*-------------------------------------------------- 
+create tiles
+-----------------------------------------------------*/
+/* shuffle tiles */
+export const shuffleTiles = (tiles) => {
+  for (let i = 0; i < tiles.length; i += 1) {
+    const randomIndex = Math.floor(Math.random() * tiles.length);
+    const randomCard = tiles[randomIndex];
+    const currentCard = tiles[i];
+    tiles[i] = randomCard;
+    tiles[randomIndex] = currentCard;
   }
-  return cards;
+  return tiles;
 };
 
-export const makeDeck = () => {
-  const newDeck = [];
-  const suits = ["hearts", "diamonds", "clubs", "spades"];
-
-  for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
-    const currentSuit = suits[suitIndex];
-    let suitSymbol = "",
-      suitColor = "";
-
-    currentSuit === "hearts"
-      ? (suitSymbol = "♥️")
-      : currentSuit === "diamonds"
-      ? (suitSymbol = "♦")
-      : currentSuit === "clubs"
-      ? (suitSymbol = "♣")
-      : (suitSymbol = "♠");
-
-    currentSuit === "hearts" || currentSuit === "diamonds"
-      ? (suitColor = "red")
-      : (suitColor = "black");
-
-    for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
-      // By default, the card name is the same as rankCounter
-      let cardName = rankCounter;
-      if (rankCounter == 1) {
-        cardName = "A";
-      } else if (rankCounter == 11) {
-        cardName = "J";
-      } else if (rankCounter == 12) {
-        cardName = "Q";
-      } else if (rankCounter == 13) {
-        cardName = "K";
-      }
-
-      // Create a new card with the current name, suit, and rank
-      const card = {
-        suitPic: suitSymbol,
-        suit: currentSuit,
-        name: cardName,
-        colour: suitColor,
-        rank: rankCounter,
-      };
-
-      // Add the new card to the deck
-      newDeck.push(card);
+/*  create all the tiles */
+export const createTiles = () => {
+  const tileSpecsArr = [
+    { l: "a", s: 1, f: 9 },
+    { l: "b", s: 3, f: 2 },
+    { l: "c", s: 3, f: 2 },
+    { l: "d", s: 2, f: 4 },
+    { l: "e", s: 1, f: 12 },
+    { l: "f", s: 4, f: 2 },
+    { l: "g", s: 2, f: 3 },
+    { l: "h", s: 4, f: 2 },
+    { l: "i", s: 1, f: 9 },
+    { l: "j", s: 8, f: 1 },
+    { l: "k", s: 5, f: 1 },
+    { l: "l", s: 1, f: 4 },
+    { l: "m", s: 3, f: 2 },
+    { l: "n", s: 1, f: 6 },
+    { l: "o", s: 1, f: 8 },
+    { l: "p", s: 3, f: 2 },
+    { l: "q", s: 10, f: 1 },
+    { l: "r", s: 1, f: 6 },
+    { l: "s", s: 1, f: 4 },
+    { l: "t", s: 1, f: 6 },
+    { l: "u", s: 1, f: 4 },
+    { l: "v", s: 4, f: 2 },
+    { l: "w", s: 4, f: 2 },
+    { l: "x", s: 8, f: 1 },
+    { l: "y", s: 4, f: 2 },
+    { l: "z", s: 10, f: 1 },
+  ];
+  const allTiles = [];
+  let id = 0;
+  for (let i = 0; i < tileSpecsArr.length; i += 1) {
+    for (let j = 0; j < tileSpecsArr[i].f; j += 1) {
+      allTiles.push({
+        tile: tileSpecsArr[i].l,
+        pt: tileSpecsArr[i].s,
+        id: "t" + (id += 1),
+      });
     }
   }
-  return newDeck;
+  return shuffleTiles(allTiles);
 };
 
-// determine winner of deal
-export const winner = (p1, p2) => {
-  if (p1.rank > p2.rank) {
-    return "p1";
-  } else if (p2.rank > p1.rank) {
-    return "p2";
-  } else {
-    return "tie";
+/*-------------------------------------------------- 
+tile functions
+-----------------------------------------------------*/
+const rackSize = 7;
+export const deal = (hand, gameTiles) => {
+  while (hand.length < rackSize && gameTiles.length > 0) {
+    hand.push(gameTiles.pop());
   }
 };

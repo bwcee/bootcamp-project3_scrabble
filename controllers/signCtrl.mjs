@@ -34,6 +34,7 @@ export default class SignInUpController extends BaseController {
         if (logInSuccess) {
           const payload = { id: user.id, user: user.user };
           const token = jwt.sign(payload, SALT, { expiresIn: "6h" });
+          
           res.send(token);
         } else {
           res.send("null");

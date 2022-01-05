@@ -52,28 +52,35 @@ document.getElementById("signInBtn").addEventListener("click", async () => {
       document.getElementById("email").value = "";
       document.getElementById("password").value = "";
     } else {
-      const token = result.data
-      localStorage.setItem("sessionToken", token)
+      const token = result.data;
 
-
+      localStorage.setItem("sessionToken", token);
 
       document.getElementById("signInDiv").remove();
       // get hold of any previous games... alr logged in at this point...
-      axios.get("/game/get_records").then((result) => {
-        if (!result.data.length) {
-          //result.data is an empty array if there are no results
-          document.getElementById("selectGameDiv").insertAdjacentHTML(
+
+      const records = await axios.get("/game/get_records", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // console.log("This is records", records);
+      if (!records.data.length) {
+        //result.data is an empty array if there are no results
+        document
+          .getElementById("selectGameDiv")
+          .insertAdjacentHTML(
             "afterbegin",
             "<p>You do not have any other games for now, please start new game</p>"
           );
-        } else {
-          console.log("This is games_users query result", result.data);
-          document.getElementById("selectGameDiv").insertAdjacentHTML(
+      } else {
+        console.log("This is games_users query result", records.data);
+        document
+          .getElementById("selectGameDiv")
+          .insertAdjacentHTML(
             "afterbegin",
             "<p>Time to figure out how to show existing games and get them</p>"
           );
-        }
-      });
+      }
+
       document.getElementById("selectGameDiv").classList.toggle("hide");
     }
   } catch (err) {
@@ -84,38 +91,59 @@ document.getElementById("signInBtn").addEventListener("click", async () => {
 /* log out btn functionality */
 logOutBtn.addEventListener("click", () => {
   try {
-    localStorage.removeItem('sessionToken')
+    localStorage.removeItem("sessionToken");
     window.location = "/";
   } catch (err) {
     console.log(err);
   }
 });
 
-// newGameBtn functionality
-newGameBtn.addEventListener("click", async () => {
-  chooseGameDiv.remove();
-  $("#main").removeClass("align-items-center");
-  gameAreaDiv.classList.remove("hidden");
-  gameBtnsDiv.append(logOutBtn);
+/* new game btn functionality */
+document.getElementById("newGameBtn").addEventListener("click", async () => {
+  const token = localStorage.getItem("sessionToken");
+  document.getElementById("selectGameDiv").remove();
+  createGameFrame();
+  createPlayBoard();
+  createStatusArea();
+  createRackTables();
+  createButtons();
   try {
-    const result = await axios.post("/game/new_record");
-    console.log("This is result from creating new record", result);
-    document.querySelector("#currentGameId").innerHTML = `${result.data.id}`;
-    document.querySelector(
-      "#p1stats"
-    ).innerHTML = `${result.data.currPlayerEmail}'s score is `;
-    document.querySelector(
-      "#p1score"
-    ).innerHTML = `${result.data.gameState.p1Score}`;
-    document.querySelector(
-      "#p2stats"
-    ).innerHTML = `${result.data.oppoPlayerEmail}'s score is `;
-    document.querySelector(
-      "#p2score"
-    ).innerHTML = `${result.data.gameState.p2Score}`;
+    const game = await axios.post(
+      "/game/new_record",
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    console.log("This is result from post", game);
+    /* can only build rack after i get results from game */
+    createRack(game.data.p1Hand, "p1_rack", "p1Hand",game.data.id);
+    createRack(game.data.p2Hand, "p2_rack", "p2Hand",game.data.id);
   } catch (err) {
     console.log(err);
   }
+
+  // gameAreaDiv.classList.remove("hidden");
+  // gameBtnsDiv.append(logOutBtn);
+  // try {
+  //   const result = await axios.post("/game/new_record");
+  //   console.log("This is result from creating new record", result);
+  //   document.querySelector("#currentGameId").innerHTML = `${result.data.id}`;
+  //   document.querySelector(
+  //     "#p1stats"
+  //   ).innerHTML = `${result.data.currPlayerEmail}'s score is `;
+  //   document.querySelector(
+  //     "#p1score"
+  //   ).innerHTML = `${result.data.gameState.p1Score}`;
+  //   document.querySelector(
+  //     "#p2stats"
+  //   ).innerHTML = `${result.data.oppoPlayerEmail}'s score is `;
+  //   document.querySelector(
+  //     "#p2score"
+  //   ).innerHTML = `${result.data.gameState.p2Score}`;
+  // } catch (err) {
+  //   console.log(err);
+  // }
 });
 
 /* 

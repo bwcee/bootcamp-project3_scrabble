@@ -40,7 +40,11 @@ app.use(cookieParser());
 
 // make use of defined routes
 app.use("/", signInUpRoutes(signInUpControl));
-app.use("/game", verifyToken, gameRoutes(gameControl)); //all gameRoutes have to be verified
+/* ------------------------------------------------
+plonked in middleware here so all routes below will haf to be verified first
+------------------------------------------------ */
+app.use(verifyToken())
+app.use("/game", gameRoutes(gameControl));
 
 
 const PORT = process.env.PORT || 3004;

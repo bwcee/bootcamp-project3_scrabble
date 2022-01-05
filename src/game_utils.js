@@ -1,11 +1,3 @@
-/////////////////////////////////////////////////////////
-// game functions
-/////////////////////////////////////////////////////////
-const deal = (hand) => {
-  while (hand.length < rackSize && gameTiles.length > 0) {
-    hand.push(gameTiles.pop());
-  }
-};
 
 /*-------------------------------------------------- 
 play btn functionality
@@ -372,12 +364,4 @@ const closeDefn =()=>{
 }
 
 
-/////////////////////////////////////////////////////////
-// initialise game
-/////////////////////////////////////////////////////////
-deal(p1Hand);
-deal(p2Hand);
 
-createRack(p1Hand, "p1_rack");
-createRack(p2Hand, "p2_rack");
-document.getElementById("p2Hand").classList.add("hide");
