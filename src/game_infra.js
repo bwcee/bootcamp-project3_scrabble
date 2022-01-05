@@ -286,7 +286,6 @@ const createRack = (hand, rackId, handId, gameId) => {
               1
             );
             // put tiles back into playerHands
-            console.log("This is tile pushed back to player hand", tile);
             gameState.data[handId].push({
               tile: removedLetter[0].tileLtr,
               pt: removedLetter[0].tilePt,
@@ -309,18 +308,6 @@ const createRack = (hand, rackId, handId, gameId) => {
   }
 };
 
-/* top up player racks after ea round */
-const topUpRack = (hand, rack) => {
-  const tileClass = rack.slice(0, 2);
-  rackCells = document.getElementById(rack).querySelectorAll(".cell");
-  for (let i = 0; i < hand.length; i += 1) {
-    rackCells[
-      i
-    ].innerHTML = `<div class="tile ${tileClass}" id="${hand[i].id}" draggable="true">${hand[i].tile}<sup>${hand[i].pt}</sup></div>`;
-
-    addDrag(hand[i].id);
-  }
-};
 
 /* make the tile divs draggable */
 const addDrag = (tile) => {
@@ -350,23 +337,19 @@ const createButtons = () => {
 /*-------------------------------------------------- 
 game status display area
 -----------------------------------------------------*/
-const createStatusArea = () => {
+const createStatusArea = (p1Name, p2Name) => {
   document
     .getElementById("status_area")
     .insertAdjacentHTML(
       "afterbegin",
       `<div id="history"><strong>Word History</strong></div>` +
         `<table>` +
-        `<tr ><td>Player 1 word score:<td><td id="p1WordScore">0<td></tr>` +
-        `<tr class="player_score font-weight-bold"><td>Player 1 total score:<td><td id="p1TotalScore">0<td></tr>` +
-        `<tr ><td>Player 2 word score:<td><td id="p2WordScore">0<td></tr>` +
-        `<tr class="player_score font-weight-bold"><td>Player 2 total score:<td><td id="p2TotalScore">0<td></tr>` +
+        `<tr ><td>P1: ${p1Name}'s word score:<td><td id="p1WordScore">0<td></tr>` +
+        `<tr class="player_score font-weight-bold"><td>P1: ${p1Name}'s total score:<td><td id="p1TotalScore">0<td></tr>` +
+        `<tr ><td>P2: ${p2Name}'s word score:<td><td id="p2WordScore">0<td></tr>` +
+        `<tr class="player_score font-weight-bold"><td>P2: ${p2Name}'s total score:<td><td id="p2TotalScore">0<td></tr>` +
         `<tr class="font-weight-bold"><td>Tiles left:<td><td id="tilesLeft">98<td></tr>` +
         `</table>`
     );
 };
-const updateStatus = () => {
-  document.getElementById("p1TotalScore").innerHTML = p1Score;
-  document.getElementById("p2TotalScore").innerHTML = p2Score;
-  document.getElementById("tilesLeft").innerHTML = gameTiles.length;
-};
+

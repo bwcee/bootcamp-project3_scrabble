@@ -56,29 +56,23 @@ export default class GameController extends BaseController {
         p2Id: player2Id,
       });
 
-      console.log("This is create new game result", game);
-
-      // associate both players with game_state in games_users table
-      // result.id is id of the created game_state in games_users table
-      // await this.db.GameUser.create({
-      //   gameId: result.id,
-      //   userId: req.cookies.userID,
-      // });
-      // await this.db.GameUser.create({ gameId: result.id, userId: othPlayer });
+      // associate both players with gameId in games_users table
+      await this.db.GameUser.create({
+        gameId: game.dataValues.id,
+        userId: player1Id,
+      });
+      await this.db.GameUser.create({
+        gameId: game.dataValues.id,
+        userId: player2Id,
+      });
 
       /* get player names and send to front end */
-      const player1Name = await this.db.User.findByPk(player1Id).user;
-      const player2Name = await this.db.User.findByPk(player2Id).user;
+      const player1Name = await this.db.User.findByPk(player1Id, { raw: true });
+      const player2Name = await this.db.User.findByPk(player2Id, { raw: true });
 
-      // let othPlayer;
-      // // haf to use == below cos req.cookies.userID is string not integer
-      // req.cookies.userID == 1 ? (othPlayer = 2) : (othPlayer = 1);
-      // const currPlayerEmail = await this.db.User.findByPk(req.cookies.userID);
-      // const oppoPlayerEmail = await this.db.User.findByPk(othPlayer);
-
-      // // add current player info to result before sending it off to the front end
-      // result.dataValues.currPlayerEmail = currPlayerEmail.email;
-      // result.dataValues.oppoPlayerEmail = oppoPlayerEmail.email;
+      game.dataValues.player1Name = player1Name.user;
+      game.dataValues.player2Name = player2Name.user;
+      console.log("This is game", game);
       res.send(game);
     } catch (err) {
       return this.errorHandler(err, res);
@@ -89,7 +83,6 @@ export default class GameController extends BaseController {
     const gameId = req.params.gameId;
     try {
       const currentGame = await this.model.findByPk(gameId, { raw: true });
-      console.log("This is currentGame", currentGame);
       res.send(currentGame);
     } catch (err) {
       return this.errorHandler(err, res);
@@ -146,4 +139,33 @@ export default class GameController extends BaseController {
       return this.errorHandler(err, res);
     }
   }
+
+    async updateGame(req, res) {
+    const gameId = req.params.gameId;
+    const [turn,
+        gameTiles,
+        p1Hand,
+        p2Hand,
+        currentWord,
+        p1Score,
+        p2Score] = Object.values(req.body);
+    try {
+      const updatedGame = await this.model.update(
+        {
+          turn: turn,
+          gameTiles: gameTiles,
+          p1Hand: p1Hand,
+          p2Hand: p2Hand,
+          currentWord: currentWord,
+          p1Score: p1Score,
+          p2Score: p2Score,
+        },
+        { where: { id: gameId }, returning: true }
+      );
+      res.send(updatedGame);
+    } catch (err) {
+      return this.errorHandler(err, res);
+    }
+  }
 }
+
