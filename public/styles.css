@@ -1,6 +1,29 @@
+/* body {
+  min-height: 90vh;
+  padding: 0;
+} */
+
 body {
   justify-content: center;
   /* text-align: center; */
+}
+
+#signInDiv {
+  margin: 178px auto;
+  width: 640px;
+  padding: 10px;
+}
+
+#signUpDiv {
+  margin: 178px auto;
+  width: 640px;
+  padding: 10px;
+}
+
+#selectGameDiv {
+  margin: 178px auto;
+  width: 640px;
+  padding: 10px;
 }
 
 #history {
@@ -11,7 +34,7 @@ body {
 }
 
 #main {
-  margin: 20px 30px 10px 100px;
+  margin: 10px 30px 10px 100px;
   /* margin: auto; */
   display: grid;
   grid-template-columns: [col1] 65% [col2] 35%;
